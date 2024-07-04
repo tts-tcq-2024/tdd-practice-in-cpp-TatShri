@@ -1,12 +1,13 @@
 #include <iostream>
 #include <string>
+#include "StringCalculator.h"
 
-class StringCalculator {
-public:
-    int add(const std::string& input) {
-        if (input.empty()) {
-            return 0;
-        }
-        else return -1;
+int StringCalculator::add(const std::string& input) {
+    if (input.empty()) {
+        return 0;
     }
-};
+    else {
+        return -1;
+    }
+}
+
