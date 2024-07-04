@@ -1,8 +1,12 @@
 #include <iostream>
-#include <stdexcept> 
-int StringCalculator (const std::string& input) {
+
+class StringCalculator {
+public:
+    int add(const std::string& input) {
         if (input.empty()) {
             return 0;
         }
-        return -1;
- }
+        else return -1;
+    }
+}
+                
