@@ -4,6 +4,6 @@
 #include <stdexcept>
 #include <string>
 
-int Add(const std::string& input);
+int StringCalculator (const std::string& input);
 
 #endif // STRINGCALCULATOR_H
