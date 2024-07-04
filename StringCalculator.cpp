@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 
 class StringCalculator {
 public:
@@ -8,5 +9,4 @@ public:
         }
         else return -1;
     }
-}
-                
+};
