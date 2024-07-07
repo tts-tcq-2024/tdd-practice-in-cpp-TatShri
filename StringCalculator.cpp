@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <stdexcept>
 #include "StringCalculator.h"
 
 bool isEmptyOrZero(const std::string& input) {
@@ -14,6 +15,9 @@ int computeSum(const std::string& input) {
 
     while (std::getline(ss, number, ',')) {
         int num = std::stoi(number);
+        if (num < 0) {
+            throw std::runtime_error("Negative numbers not allowed: " + number);
+        }
         sum += num;
     }
 
