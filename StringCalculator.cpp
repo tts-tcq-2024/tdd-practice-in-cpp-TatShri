@@ -8,17 +8,29 @@ bool isEmptyOrZero(const std::string& input) {
     return input.empty() || input == "0";
 }
 
+void checkForNegative(int num) {
+    if (num < 0) {
+        throw std::runtime_error("Negative numbers not allowed");
+    }
+}
+
 int computeSum(const std::string& input) {
-    std::stringstream ss(input);
     int sum = 0;
     std::string number;
 
+    // Replace newlines with commas
+    std::string modifiedInput = input;
+    std::replace(modifiedInput.begin(), modifiedInput.end(), '\n', ',');
+
+    // Create a stringstream from the modified input
+    std::stringstream ss(modifiedInput);
+
     while (std::getline(ss, number, ',')) {
-        int num = std::stoi(number);
-        if (num < 0) {
-            throw std::runtime_error("Negative numbers not allowed: " + number);
+        if (!number.empty()) {
+            int num = std::stoi(number);
+            checkForNegative(num);
+            sum += num;
         }
-        sum += num;
     }
 
     return sum;
