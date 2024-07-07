@@ -12,23 +12,17 @@ int computeSum(const std::string& input) {
     int sum = 0;
     std::string number;
 
-    std::getline(ss, number, ',');
-    int num1 = std::stoi(number);
-    if (num1 < 0) {
-        throw std::runtime_error("");
+    while (std::getline(ss, number, ',')) {
+        int num = std::stoi(number);
+        sum += num;
     }
-    sum += num1;
-
-    std::getline(ss, number, ',');
-    int num2 = std::stoi(number);
-    if (num2 < 0) {
-        throw std::runtime_error("");
-    }
-    sum += num2;
 
     return sum;
 }
 
 int StringCalculator::add(const std::string& input) {
-    return ::isEmptyOrZero(input) * ::computeSum(input);
+    if (isEmptyOrZero(input)) {
+        return 0;
+    }
+    return computeSum(input);
 }
