@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 #include <stdexcept>
+#include <algorithm> // for std::replace
 #include "StringCalculator.h"
 
 bool isEmptyOrZero(const std::string& input) {
@@ -10,8 +11,12 @@ bool isEmptyOrZero(const std::string& input) {
 
 void checkForNegative(int num) {
     if (num < 0) {
-        throw std::runtime_error("Negative numbers not allowed");
+        throw std::runtime_error("");
     }
+}
+
+bool isLessThanOrEqualTo1000(int num) {
+    return num <= 1000;
 }
 
 int computeSum(const std::string& input) {
@@ -29,7 +34,7 @@ int computeSum(const std::string& input) {
         if (!number.empty()) {
             int num = std::stoi(number);
             checkForNegative(num);
-            sum += num;
+            sum += isLessThanOrEqualTo1000(num) * num; // Using multiplication to conditionally add num to sum
         }
     }
 
