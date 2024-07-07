@@ -3,28 +3,32 @@
 #include <sstream>
 #include "StringCalculator.h"
 
-class StringCalculator {
-public:
-    int add(const std::string& input) {
-        return isEmptyOrZero(input) * computeSum(input);
+bool isEmptyOrZero(const std::string& input) {
+    return input.empty() || input == "0";
+}
+
+int computeSum(const std::string& input) {
+    std::stringstream ss(input);
+    int sum = 0;
+    std::string number;
+
+    std::getline(ss, number, ',');
+    int num1 = std::stoi(number);
+    if (num1 < 0) {
+        throw std::runtime_error("");
     }
+    sum += num1;
 
-private:
-    int isEmptyOrZero(const std::string& input) {
-        return input.empty() || input == "0";
+    std::getline(ss, number, ',');
+    int num2 = std::stoi(number);
+    if (num2 < 0) {
+        throw std::runtime_error("");
     }
+    sum += num2;
 
-    int computeSum(const std::string& input) {
-        std::stringstream ss(input);
-        int sum = 0;
-        std::string number;
+    return sum;
+}
 
-        std::getline(ss, number, ',');
-        sum += std::stoi(number);
-
-        std::getline(ss, number, ',');
-        sum += std::stoi(number);
-
-        return sum;
-    }
-};
+int StringCalculator::add(const std::string& input) {
+    return ::isEmptyOrZero(input) * ::computeSum(input);
+}
