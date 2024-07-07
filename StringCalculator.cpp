@@ -15,9 +15,9 @@ void checkForNegative(int num) {
     }
 }
 
-// bool isLessThanOrEqualTo1000(int num) {
-//     return num <= 1000;
-// }
+bool isLessThanOrEqualTo1000(int num) {
+    return num <= 1000;
+}
 
 int computeSum(const std::string& input) {
     int sum = 0;
@@ -34,8 +34,7 @@ int computeSum(const std::string& input) {
         if (!number.empty()) {
             int num = std::stoi(number);
             checkForNegative(num);
-            // sum += isLessThanOrEqualTo1000(num) * num; // Temporarily disabled
-            sum += num; // Sum all numbers without checking <= 1000
+            sum += isLessThanOrEqualTo1000(num) * num; // Using multiplication to conditionally add num to sum
         }
     }
 
