@@ -5,7 +5,7 @@
 #include <algorithm> 
 #include "StringCalculator.h"
 
-bool checkifEmptyOrZero(const std::string& input) {
+bool isEmptyOrZero(const std::string& input) {
     return input.empty() || input == "0";
 }
 
@@ -15,22 +15,22 @@ void checkForNegative(int num) {
     }
 }
 
-bool checkifLessThanOrEqualTo1000(int num) {
+bool isLessThanOrEqualTo1000(int num) {
     return num <= 1000;
 }
 
-// Function to extract the custom delimiter from input string
-std::string extractcustomDelimiter(const std::string& input) {
-    std::string del = ",";
-    size_t del_pos = input.find("//");
-    if (del_pos == 0) { // Only consider custom del if "//" is at the start
-        del_pos += 2; // Move past "//"
+// Function to extract custom delimiter from input string
+std::string extractDelimiter(const std::string& input) {
+    std::string delimiter = ",";
+    size_t delimiter_pos = input.find("//");
+    if (delimiter_pos == 0) { // Only consider custom delimiter if "//" is at the start
+        delimiter_pos += 2; // Move past "//"
         size_t newline_pos = input.find("\n", delimiter_pos);
         if (newline_pos != std::string::npos) {
-            del = input.substr(del_pos, newline_pos - del_pos);
+            delimiter = input.substr(delimiter_pos, newline_pos - delimiter_pos);
         }
     }
-    return del;
+    return delimiter;
 }
 
 // Function to replace newlines with commas when custom delimiter is not specified
@@ -62,7 +62,7 @@ int computeSum(const std::string& input) {
     std::string number;
 
     // Extract delimiter
-    std::string delimiter = extractcustomDelimiter(input);
+    std::string delimiter = extractDelimiter(input);
 
     // Replace newlines with the chosen delimiter
     std::string modifiedInput = replaceNewlinesWithCommas(input); // Handle default case
@@ -78,7 +78,7 @@ int computeSum(const std::string& input) {
         if (!number.empty()) {
             int num = std::stoi(number);
             checkForNegative(num);
-            sum += checkifLessThanOrEqualTo1000(num) * num;
+            sum += isLessThanOrEqualTo1000(num) * num;
         }
     }
 
@@ -86,7 +86,7 @@ int computeSum(const std::string& input) {
 }
 
 int StringCalculator::add(const std::string& input) {
-    if (checkifEmptyOrZero(input)) {
+    if (isEmptyOrZero(input)) {
         return 0;
     }
     return computeSum(input);
