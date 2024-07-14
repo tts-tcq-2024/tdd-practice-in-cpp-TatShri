@@ -32,19 +32,21 @@ std::string extractCustomDelimiter(const std::string& input) {
     return delimiter;
 }
 
+void processNumberAndUpdateSum(int& sum, const std::string& number) {
+    int num = std::stoi(number);
+    checkForNegative(num);
+    if (isNumberLessThanOrEqualTo1000(num)) {
+        sum += num;
+    }
+}
+
 int sumNumbers(const std::string& numbers, const std::string& delimiter) {
     int sum = 0;
-    std::string number;
     std::stringstream ss(numbers);
+    std::string number;
 
     while (std::getline(ss, number, delimiter[0])) {
-        if (!number.empty()) {
-            int num = std::stoi(number);
-            checkForNegative(num);
-            if (isNumberLessThanOrEqualTo1000(num)) {
-                sum += num;
-            }
-        }
+        processNumberAndUpdateSum(sum, number);
     }
 
     return sum;
@@ -68,7 +70,6 @@ int StringCalculator::add(const std::string& input) {
 
     std::string customDelimiter = extractCustomDelimiter(input);
     if (!customDelimiter.empty()) {
-        // Adjust sumNumbers call to handle multi-character delimiter
         std::string numbersString = input.substr(input.find("\n") + 1);
         return sumNumbers(numbersString, customDelimiter);
     } else {
