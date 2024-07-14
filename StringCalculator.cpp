@@ -3,7 +3,8 @@
 #include "StringCalculator.h"
 #include <stdexcept>
 #include <sstream>
-#include <algorithm> 
+#include <algorithm>
+#include <vector>
 
 bool isInputEmptyOrZero(const std::string& input) {
     return input.empty() || input == "0";
@@ -21,8 +22,8 @@ bool isNumberLessThanOrEqualTo1000(int num) {
 
 std::string extractCustomDelimiter(const std::string& input) {
     std::string delimiter;
-    if (input.find("//") == 0) { 
-        size_t delimiter_start = 2; 
+    if (input.find("//") == 0) {
+        size_t delimiter_start = 2;
         size_t delimiter_end = input.find("\n", delimiter_start);
         if (delimiter_end != std::string::npos) {
             delimiter = input.substr(delimiter_start, delimiter_end - delimiter_start);
@@ -50,7 +51,7 @@ int sumNumbers(const std::string& numbers, const std::string& delimiter) {
 }
 
 int handleDefaultDelimiters(const std::string& input) {
-    const std::vector<char> defaultDelimiters = {',', '\n'};
+    const std::vector<char> defaultDelimiters = { ',', '\n' };
     for (char delimiter : defaultDelimiters) {
         if (input.find(delimiter) != std::string::npos) {
             return sumNumbers(input, std::string(1, delimiter));
@@ -67,7 +68,9 @@ int StringCalculator::add(const std::string& input) {
 
     std::string customDelimiter = extractCustomDelimiter(input);
     if (!customDelimiter.empty()) {
-        return sumNumbers(input, customDelimiter);
+        // Adjust sumNumbers call to handle multi-character delimiter
+        std::string numbersString = input.substr(input.find("\n") + 1);
+        return sumNumbers(numbersString, customDelimiter);
     } else {
         return handleDefaultDelimiters(input);
     }
