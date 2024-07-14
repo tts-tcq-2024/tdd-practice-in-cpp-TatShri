@@ -53,12 +53,16 @@ int sumNumbers(const std::string& numbers, const std::string& delimiter) {
 }
 
 int handleDefaultDelimiters(const std::string& input) {
-    const std::vector<char> defaultDelimiters = { ',', '\n' };
-    for (char delimiter : defaultDelimiters) {
+    const std::vector<std::string> defaultDelimiters = { ",", "\n" };
+
+    for (const std::string& delimiter : defaultDelimiters) {
         if (input.find(delimiter) != std::string::npos) {
-            return sumNumbers(input, std::string(1, delimiter));
+            // Use sumNumbers with the found delimiter
+            return sumNumbers(input, delimiter);
         }
     }
+
+    // If no default delimiter is found, treat the input as a single number
     return std::stoi(input);
 }
 
