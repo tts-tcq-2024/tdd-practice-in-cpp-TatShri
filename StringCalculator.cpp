@@ -1,5 +1,3 @@
-// StringCalculator.cpp
-
 #include "StringCalculator.h"
 #include <stdexcept>
 #include <sstream>
@@ -40,13 +38,17 @@ void processNumberAndUpdateSum(int& sum, const std::string& number) {
     }
 }
 
-int sumNumbers(const std::string& numbers, const std::string& delimiter) {
+int sumNumbers(const std::string& numbers, const std::vector<std::string>& delimiters) {
     int sum = 0;
     std::stringstream ss(numbers);
     std::string number;
 
-    while (std::getline(ss, number, delimiter[0])) {
-        processNumberAndUpdateSum(sum, number);
+    while (std::getline(ss, number, ',')) {
+        std::stringstream sub_ss(number);
+        std::string sub_number;
+        while (std::getline(sub_ss, sub_number, '\n')) {
+            processNumberAndUpdateSum(sum, sub_number);
+        }
     }
 
     return sum;
@@ -57,25 +59,22 @@ int handleDefaultDelimiters(const std::string& input) {
 
     for (const std::string& delimiter : defaultDelimiters) {
         if (input.find(delimiter) != std::string::npos) {
-            // Use sumNumbers with the found delimiter
-            return sumNumbers(input, delimiter);
+            return sumNumbers(input, defaultDelimiters);
         }
     }
 
-    // If no default delimiter is found, treat the input as a single number
     return std::stoi(input);
 }
 
 int StringCalculator::add(const std::string& input) {
-    // Main logic of the add function
-    if (isInputEmptyOrZero(input)) {
+    if (input.empty()) {
         return 0;
     }
 
     std::string customDelimiter = extractCustomDelimiter(input);
     if (!customDelimiter.empty()) {
         std::string numbersString = input.substr(input.find("\n") + 1);
-        return sumNumbers(numbersString, customDelimiter);
+        return sumNumbers(numbersString, {customDelimiter});
     } else {
         return handleDefaultDelimiters(input);
     }
