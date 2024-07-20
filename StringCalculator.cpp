@@ -38,22 +38,38 @@ void verifyUpdateInput(int& sum, const std::string& number) {
     }
 }
 
-int processInput(const std::string& numbers, const std::vector<std::string>& delimiters) {
-    int sum = 0;
-    std::string current_delimiter = delimiters[0];
-    std::string secondary_delimiter = delimiters.size() > 1 ? delimiters[1] : "\n";
-
+std::vector<std::string> InputSplit(const std::string& numbers, const std::string& primaryDelimiter, const std::string& secondaryDelimiter) {
+    std::vector<std::string> splitNumbers;
     std::stringstream ss(numbers);
     std::string number;
 
-    while (std::getline(ss, number, current_delimiter[0])) {
+    while (std::getline(ss, number, primaryDelimiter[0])) {
         std::stringstream sub_ss(number);
         std::string sub_number;
 
-        while (std::getline(sub_ss, sub_number, secondary_delimiter[0])) {
-            verifyUpdateInput(sum, sub_number);
+        while (std::getline(sub_ss, sub_number, secondaryDelimiter[0])) {
+            splitNumbers.push_back(sub_number);
         }
     }
+
+    return splitNumbers;
+}
+
+// Processes each number and updates the sum accordingly.
+void runVerifyUpdate(const std::vector<std::string>& numbers, int& sum) {
+    for (const auto& number : numbers) {
+        verifyUpdateInput(sum, number);
+    }
+}
+
+// Main function to process input with delimiters and calculate the sum.
+int processInput(const std::string& numbers, const std::vector<std::string>& delimiters) {
+    std::string primaryDelimiter = delimiters[0];
+    std::string secondaryDelimiter = delimiters.size() > 1 ? delimiters[1] : "\n";
+
+    std::vector<std::string> splitNumbers = InputSplit(numbers, primaryDelimiter, secondaryDelimiter);
+    int sum = 0;
+    runVerifyUpdate(splitNumbers, sum);
 
     return sum;
 }
