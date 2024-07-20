@@ -1,104 +1,80 @@
-#include "StringCalculator.h"
-#include <stdexcept>
-#include <sstream>
-#include <algorithm>
+#include <iostream>
+#include <string>
 #include <vector>
+#include <regex>
+#include <stdexcept> 
+#include "StringCalculator.h"
 
-// Helper function to split a string by a single delimiter
-std::vector<std::string> splitByDelimiter(const std::string& str, const std::string& delimiter) {
-    std::vector<std::string> result;
-    std::string::size_type start = 0;
-    std::string::size_type end;
-
-    while ((end = str.find(delimiter, start)) != std::string::npos) {
-        result.push_back(str.substr(start, end - start));
-        start = end + delimiter.length();
-    }
-    result.push_back(str.substr(start));
-
-    return result;
-}
-
-// Helper function to split a string by both primary and secondary delimiters
-std::vector<std::string> splitInputByDelimiters(const std::string& numbers, const std::string& primaryDelimiter, const std::string& secondaryDelimiter) {
-    std::vector<std::string> splitNumbers;
-
-    // Split by the primary delimiter
-    std::vector<std::string> primarySplit = splitByDelimiter(numbers, primaryDelimiter);
-
-    // Split each segment by the secondary delimiter
-    for (const auto& segment : primarySplit) {
-        std::vector<std::string> secondarySplit = splitByDelimiter(segment, secondaryDelimiter);
-        splitNumbers.insert(splitNumbers.end(), secondarySplit.begin(), secondarySplit.end());
-    }
-
-    return splitNumbers;
-}
-
-
-// Checks if input is empty or contains only "0"
-bool isInputEmptyOrZero(const std::string& input) {
-    return input.empty() || input == "0";
-}
-
-// Throws an exception if a negative number is encountered
-void checkForNegative(int num) {
-    if (num < 0) {
-        throw std::runtime_error("Negatives not allowed");
+// Definition of static methods
+void StringCalculator::checkForNegative(int number) {
+    if (number < 0) {
+        throw std::runtime_error("Negative numbers not allowed.");
     }
 }
 
-// Validates if the number is less than or equal to 1000
-bool isNumberValid(int num) {
-    return num <= 1000;
-}
-
-// Extracts the custom delimiter if specified in the input
-std::string extractCustomDelimiter(const std::string& input) {
-    // Extract delimiter if it starts with "//" and followed by a newline
-    if (input.find("//") == 0 && input.size() > 2) {
-        size_t delimiter_end = input.find('\n', 2);
-        return (delimiter_end != std::string::npos) ? input.substr(2, delimiter_end - 2) : "";
+int StringCalculator::checkforGreaterthan1000(int number) {
+    if (number > 1000) {
+        return 0;
     }
-    return "";
+    return number;
 }
 
-// Splits the input string by primary and secondary delimiters
-std::vector<std::string> splitInput(const std::string& numbers, const std::string& primaryDelimiter, const std::string& secondaryDelimiter) {
-    return splitInputByDelimiters(numbers, primaryDelimiter, secondaryDelimiter);
-}
+std::vector<int> StringCalculator::extractNumbers(const std::string& input) {
+    std::vector<int> numbers;
+    
+    // Regex pattern to match numbers with 1 to 4 digits (including negative signs)
+    std::regex pattern(R"(-?\d{1,4})");  // The -? allows for optional negative signs
+    std::sregex_iterator iter(input.begin(), input.end(), pattern);
+    std::sregex_iterator end;
 
-// Calculates the sum of the numbers after splitting and validation
-int calculateSum(const std::vector<std::string>& numbers) {
-    int sum = 0;
-    for (const auto& number : numbers) {
-        int num = std::stoi(number);
-        checkForNegative(num);
-        if (isNumberValid(num)) {
-            sum += num;
+    while (iter != end) {
+        std::string match = iter->str();
+        int number = std::stoi(match);
+        
+        // Check for negative numbers
+        checkForNegative(number);
+        // Check if number greater than 1000
+        number = checkforGreaterthan1000(number);
+        // Add the number to the vector if it's not excluded
+        if (number != 0) { // Exclude 0s which are placeholders for numbers greater than 1000
+            numbers.push_back(number);
         }
+        
+        ++iter;
+    }
+
+    return numbers;
+}
+
+int StringCalculator::calculateSum(const std::vector<int>& numbers) {
+    int sum = 0;
+    for (int num : numbers) {
+        sum += num;
     }
     return sum;
 }
 
-// Main method to add numbers based on input
+void StringCalculator::printNumbers(const std::vector<int>& numbers) {
+    std::cout << "Extracted numbers:" << std::endl;
+    for (int num : numbers) {
+        std::cout << num << std::endl;
+    }
+}
+
 int StringCalculator::add(const std::string& input) {
-    if (isInputEmptyOrZero(input)) {
+    // Check if the input is empty
+    if (input.empty()) {
         return 0;
     }
 
-    std::string customDelimiter = extractCustomDelimiter(input);
-    std::string numbersString;
-    std::string primaryDelimiter = ",";
-    std::string secondaryDelimiter = "\n";
+    // Extract numbers from the input string
+    std::vector<int> numbers = extractNumbers(input);
 
-    if (!customDelimiter.empty()) {
-        numbersString = input.substr(input.find('\n') + 1);
-        primaryDelimiter = customDelimiter;
-    } else {
-        numbersString = input;
-    }
+    // Print the extracted numbers
+    printNumbers(numbers);
 
-    std::vector<std::string> splitNumbers = splitInput(numbersString, primaryDelimiter, secondaryDelimiter);
-    return calculateSum(splitNumbers);
+    // Calculate the sum of the extracted numbers
+    return calculateSum(numbers);
 }
+
+
