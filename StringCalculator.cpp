@@ -63,9 +63,6 @@ int StringCalculator::add(const std::string& input) {
     // Extract numbers from the input string
     std::vector<int> numbers = extractNumbers(input);
 
-    // Print the extracted numbers
-    printNumbers(numbers);
-
     // Calculate the sum of the extracted numbers
     return calculateSum(numbers);
 }
