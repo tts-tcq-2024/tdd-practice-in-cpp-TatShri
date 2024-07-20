@@ -4,17 +4,17 @@
 #include <algorithm>
 #include <vector>
 
-bool checkifInput0orEmpty(const std::string& input) {
+bool checkIfInput0OrEmpty(const std::string& input) {
     return input.empty() || input == "0";
 }
 
-void checkifInputNegative(int num) {
+void checkIfInputNegative(int num) {
     if (num < 0) {
         throw std::runtime_error("Negatives not allowed");
     }
 }
 
-bool checkifNumberLessThanOrEqualTo1000(int num) {
+bool checkIfNumberLessThanOrEqualTo1000(int num) {
     return num <= 1000;
 }
 
@@ -32,21 +32,25 @@ std::string extractCustomDelimiter(const std::string& input) {
 
 void verifyUpdateInput(int& sum, const std::string& number) {
     int num = std::stoi(number);
-    checkifInputNegative(num);
-    if (checkifNumberLessThanOrEqualTo1000(num)) {
+    checkIfInputNegative(num);
+    if (checkIfNumberLessThanOrEqualTo1000(num)) {
         sum += num;
     }
 }
 
-int proccessInput(const std::string& numbers, const std::vector<std::string>& delimiters) {
+int processInput(const std::string& numbers, const std::vector<std::string>& delimiters) {
     int sum = 0;
+    std::string current_delimiter = delimiters[0];
+    std::string secondary_delimiter = delimiters.size() > 1 ? delimiters[1] : "\n";
+
     std::stringstream ss(numbers);
     std::string number;
 
-    while (std::getline(ss, number, delimiters[0][0])) {
+    while (std::getline(ss, number, current_delimiter[0])) {
         std::stringstream sub_ss(number);
         std::string sub_number;
-        while (std::getline(sub_ss, sub_number, delimiters[1][0])) {
+
+        while (std::getline(sub_ss, sub_number, secondary_delimiter[0])) {
             verifyUpdateInput(sum, sub_number);
         }
     }
@@ -59,7 +63,7 @@ int operateDelimiters(const std::string& input) {
 
     for (const std::string& delimiter : defaultDelimiters) {
         if (input.find(delimiter) != std::string::npos) {
-            return proccessInput(input, defaultDelimiters);
+            return processInput(input, defaultDelimiters);
         }
     }
 
@@ -67,14 +71,14 @@ int operateDelimiters(const std::string& input) {
 }
 
 int StringCalculator::add(const std::string& input) {
-    if (input.empty()) {
+    if (checkIfInput0OrEmpty(input)) {
         return 0;
     }
 
     std::string customDelimiter = extractCustomDelimiter(input);
     if (!customDelimiter.empty()) {
         std::string numbersString = input.substr(input.find("\n") + 1);
-        return proccessInput(numbersString, { customDelimiter, "\n" });
+        return processInput(numbersString, { customDelimiter, "\n" });
     } else {
         return operateDelimiters(input);
     }
