@@ -55,12 +55,15 @@ bool isNumberValid(int num) {
 
 // Extracts the custom delimiter if specified in the input
 std::string extractCustomDelimiter(const std::string& input) {
-    if (input.size() >= 2 && input.substr(0, 2) == "//") {
+    // Check if the input starts with the custom delimiter marker
+    if (input.size() > 2 && input.substr(0, 2) == "//") {
         size_t delimiter_end = input.find('\n', 2);
         if (delimiter_end != std::string::npos) {
+            // Extract and return the custom delimiter
             return input.substr(2, delimiter_end - 2);
         }
     }
+    // Return an empty string if no custom delimiter is found
     return "";
 }
 
