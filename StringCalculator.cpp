@@ -54,13 +54,6 @@ int StringCalculator::calculateSum(const std::vector<int>& numbers) {
     return sum;
 }
 
-void StringCalculator::printNumbers(const std::vector<int>& numbers) {
-    std::cout << "Extracted numbers:" << std::endl;
-    for (int num : numbers) {
-        std::cout << num << std::endl;
-    }
-}
-
 int StringCalculator::add(const std::string& input) {
     // Check if the input is empty
     if (input.empty()) {
