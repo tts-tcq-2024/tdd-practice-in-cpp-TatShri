@@ -4,98 +4,102 @@
 #include <algorithm>
 #include <vector>
 
-bool checkIfInput0OrEmpty(const std::string& input) {
-    return input.empty() || input == "0";
-}
+// Helper function to split a string by a single delimiter
+std::vector<std::string> splitByDelimiter(const std::string& str, const std::string& delimiter) {
+    std::vector<std::string> result;
+    std::string::size_type start = 0;
+    std::string::size_type end;
 
-void checkIfInputNegative(int num) {
-    if (num < 0) {
-        throw std::runtime_error("Negatives not allowed");
+    while ((end = str.find(delimiter, start)) != std::string::npos) {
+        result.push_back(str.substr(start, end - start));
+        start = end + delimiter.length();
     }
+    result.push_back(str.substr(start));
+
+    return result;
 }
 
-bool checkIfNumberLessThanOrEqualTo1000(int num) {
-    return num <= 1000;
-}
-
-std::string extractCustomDelimiter(const std::string& input) {
-    std::string delimiter;
-    if (input.find("//") == 0) {
-        size_t delimiter_start = 2;
-        size_t delimiter_end = input.find("\n", delimiter_start);
-        if (delimiter_end != std::string::npos) {
-            delimiter = input.substr(delimiter_start, delimiter_end - delimiter_start);
-        }
-    }
-    return delimiter;
-}
-
-void verifyUpdateInput(int& sum, const std::string& number) {
-    int num = std::stoi(number);
-    checkIfInputNegative(num);
-    if (checkIfNumberLessThanOrEqualTo1000(num)) {
-        sum += num;
-    }
-}
-
-std::vector<std::string> InputSplit(const std::string& numbers, const std::string& primaryDelimiter, const std::string& secondaryDelimiter) {
+// Helper function to split a string by both primary and secondary delimiters
+std::vector<std::string> splitInputByDelimiters(const std::string& numbers, const std::string& primaryDelimiter, const std::string& secondaryDelimiter) {
     std::vector<std::string> splitNumbers;
-    std::stringstream ss(numbers);
-    std::string number;
 
-    while (std::getline(ss, number, primaryDelimiter[0])) {
-        std::stringstream sub_ss(number);
-        std::string sub_number;
+    // Split by the primary delimiter
+    std::vector<std::string> primarySplit = splitByDelimiter(numbers, primaryDelimiter);
 
-        while (std::getline(sub_ss, sub_number, secondaryDelimiter[0])) {
-            splitNumbers.push_back(sub_number);
-        }
+    // Split each segment by the secondary delimiter
+    for (const auto& segment : primarySplit) {
+        std::vector<std::string> secondarySplit = splitByDelimiter(segment, secondaryDelimiter);
+        splitNumbers.insert(splitNumbers.end(), secondarySplit.begin(), secondarySplit.end());
     }
 
     return splitNumbers;
 }
 
-// Processes each number and updates the sum accordingly.
-void runVerifyUpdate(const std::vector<std::string>& numbers, int& sum) {
-    for (const auto& number : numbers) {
-        verifyUpdateInput(sum, number);
+
+// Checks if input is empty or contains only "0"
+bool isInputEmptyOrZero(const std::string& input) {
+    return input.empty() || input == "0";
+}
+
+// Throws an exception if a negative number is encountered
+void checkForNegative(int num) {
+    if (num < 0) {
+        throw std::runtime_error("Negatives not allowed");
     }
 }
 
-// Main function to process input with delimiters and calculate the sum.
-int processInput(const std::string& numbers, const std::vector<std::string>& delimiters) {
-    std::string primaryDelimiter = delimiters[0];
-    std::string secondaryDelimiter = delimiters.size() > 1 ? delimiters[1] : "\n";
+// Validates if the number is less than or equal to 1000
+bool isNumberValid(int num) {
+    return num <= 1000;
+}
 
-    std::vector<std::string> splitNumbers = InputSplit(numbers, primaryDelimiter, secondaryDelimiter);
+// Extracts the custom delimiter if specified in the input
+std::string extractCustomDelimiter(const std::string& input) {
+    if (input.size() >= 2 && input.substr(0, 2) == "//") {
+        size_t delimiter_end = input.find('\n', 2);
+        if (delimiter_end != std::string::npos) {
+            return input.substr(2, delimiter_end - 2);
+        }
+    }
+    return "";
+}
+
+// Splits the input string by primary and secondary delimiters
+std::vector<std::string> splitInput(const std::string& numbers, const std::string& primaryDelimiter, const std::string& secondaryDelimiter) {
+    return splitInputByDelimiters(numbers, primaryDelimiter, secondaryDelimiter);
+}
+
+// Calculates the sum of the numbers after splitting and validation
+int calculateSum(const std::vector<std::string>& numbers) {
     int sum = 0;
-    runVerifyUpdate(splitNumbers, sum);
-
+    for (const auto& number : numbers) {
+        int num = std::stoi(number);
+        checkForNegative(num);
+        if (isNumberValid(num)) {
+            sum += num;
+        }
+    }
     return sum;
 }
 
-int operateDelimiters(const std::string& input) {
-    const std::vector<std::string> defaultDelimiters = { ",", "\n" };
-
-    for (const std::string& delimiter : defaultDelimiters) {
-        if (input.find(delimiter) != std::string::npos) {
-            return processInput(input, defaultDelimiters);
-        }
-    }
-
-    return std::stoi(input);
-}
-
+// Main method to add numbers based on input
 int StringCalculator::add(const std::string& input) {
-    if (checkIfInput0OrEmpty(input)) {
+    if (isInputEmptyOrZero(input)) {
         return 0;
     }
 
     std::string customDelimiter = extractCustomDelimiter(input);
+    std::string numbersString;
+    std::string primaryDelimiter = ",";
+    std::string secondaryDelimiter = "\n";
+
     if (!customDelimiter.empty()) {
-        std::string numbersString = input.substr(input.find("\n") + 1);
-        return processInput(numbersString, { customDelimiter, "\n" });
+        numbersString = input.substr(input.find('\n') + 1);
+        primaryDelimiter = customDelimiter;
     } else {
-        return operateDelimiters(input);
+        numbersString = input;
     }
+
+    std::vector<std::string> splitNumbers = splitInput(numbersString, primaryDelimiter, secondaryDelimiter);
+    return calculateSum(splitNumbers);
 }
